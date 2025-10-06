@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAP Produk</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            /* Tema Terang (Light Mode) - Default */
+            --bg-color: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --border-color: #e5e5e5;
+            --shadow-color: rgba(0, 0, 0, 0.06);
+            --accent-color: #0071E3;
+            --success-color: #34C759;
+            --gradient: none;
+        }
+
+        body.dark-mode {
+            /* Tema Gelap (Dark Mode) */
+            --bg-color: transparent;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1A6;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --gradient: linear-gradient(135deg, #232526 0%, #414345 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: var(--bg-color);
+            background-image: var(--gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header-utils {
+            position: fixed;
+            top: 1.5rem;
+            right: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            z-index: 100;
+        }
+        .small-clock {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .theme-toggle-btn:hover {
+            background-color: rgba(128, 128, 128, 0.1);
+        }
+        .theme-toggle-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+        .sun-icon { display: block; }
+        .moon-icon { display: none; }
+        body.dark-mode .sun-icon { display: none; }
+        body.dark-mode .moon-icon { display: block; }
+
+        .main-content-wrapper {
+            width: 100%;
+            padding: 6rem 4rem 3rem; 
+        }
+
+        .header-main, .search-section, .top-searches-section {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .header-main {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .main-title {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+        }
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            font-weight: 400;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 16px 0 var(--shadow-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body.dark-mode .card {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .search-section {
+            padding: 2rem;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 1.2rem 1.5rem;
+            font-size: 1.1rem;
+            font-family: inherit;
+            color: var(--text-primary);
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        #searchInput::placeholder {
+            color: var(--text-secondary);
+        }
+        #searchInput:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+        }
+
+        .top-searches-section {
+            margin: 1.5rem auto 3rem;
+            text-align: center;
+        }
+        #top-searches-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        #top-searches-list li {
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        #top-searches-list li:not(.title) {
+            cursor: pointer;
+        }
+        #top-searches-list li:not(.title):hover {
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+        }
+        #top-searches-list li.title {
+            font-weight: 600;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+        }
+
+        .results-section {
+            margin-top: 3.5rem;
+        }
+        .results-summary {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            max-width: 800px; 
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .results-summary h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+        }
+        .results-summary span {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .product-card {
+            padding: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .product-card.animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 12px 24px 0 var(--shadow-color);
+        }
+        .product-info h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+        .product-info .product-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .product-info .product-status {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .product-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.8rem;
+        }
+        .copy-link-btn {
+            flex-grow: 1;
+            font-family: inherit;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .copy-link-btn.alt {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .copy-link-btn.copied {
+            background-color: var(--success-color) !important;
+            color: white !important;
+        }
+
+        .no-results, .loader { text-align: center; padding: 3rem; font-size: 1.1rem; }
+        .loader { border: 4px solid var(--border-color); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 1s linear infinite; margin: 3rem auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .main-footer { text-align: center; padding: 2rem 1rem; font-size: 0.9rem; color: var(--text-secondary); opacity: 0.8;}
+    </style>
+</head>
+<body>
+    <div class="header-utils">
+        <div id="realtime-clock" class="small-clock"></div>
+        <button id="theme-toggle" class="theme-toggle-btn">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.59a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 01-1.06 0l-1.59-1.591a.75.75 0 111.06-1.06l1.59 1.59a.75.75 0 010 1.061zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM5.106 17.894A.75.75 0 016.167 17.3l1.59 1.59a.75.75 0 11-1.06 1.06l-1.59-1.59zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.106 6.106a.75.75 0 011.06 0l1.591 1.59a.75.75 0 01-1.06 1.061L6.667 7.167a.75.75 0 010-1.06z"/></svg>
+            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69a.75.75 0 01.981.981A10.503 10.503 0 0118 19.5a10.5 10.5 0 01-10.5-10.5c0-1.25.18-2.453.513-3.598a.75.75 0 01.815-.162z" clip-rule="evenodd" /></svg>
+        </button>
+    </div>
+    <div class="main-content-wrapper">
+        <header class="header-main"><h1 class="main-title">TAP Produk</h1><p class="tagline">Temukan informasi produk yang kamu butuhkan secara instan.</p></header>
+        <div class="search-section card"><input type="text" id="searchInput" placeholder="Mulai ketik di sini..." autofocus></div>
+        <div id="top-searches-container" class="top-searches-section"><ul id="top-searches-list"></ul></div>
+        <div id="results-container" class="results-section"></div>
+    </div>
+    <footer class="main-footer"><p>Created by Afiq Mazadi</p></footer>
+
+    <script>
+        const themeToggleButton = document.getElementById('theme-toggle');
+        const body = document.body;
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('results-container');
+        const clockDisplay = document.getElementById('realtime-clock');
+        const topSearchesList = document.getElementById('top-searches-list');
+        let debounceTimeout;
+
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            clockDisplay.textContent = `${hours}:${minutes}`;
+        }
+        
+        async function fetchTopSearches() {
+            // Fungsi top searches dikosongkan untuk versi Netlify awal
+        }
+
+        async function fetchSearchResults(keyword) {
+            resultsContainer.innerHTML = '<div class="loader"></div>';
+            try {
+                const response = await fetch('/.netlify/functions/search', {
+                    method: 'POST',
+                    body: JSON.stringify({ keyword: keyword }),
+                });
+                if (!response.ok) { throw new Error(`Server error: ${response.status}`); }
+                
+                const results = await response.json();
+                
+                if (results.length > 0) {
+                    let html = `<div class="results-summary"><h2>Hasil Pencarian</h2><span>Menampilkan ${results.length} produk</span></div><div class="product-grid">`;
+                    results.forEach(p => {
+                        html += `
+                            <div class="card product-card">
+                                <div class="product-info">
+                                    <h3>${p['Nama Produk']}</h3>
+                                    <p class="product-subtitle">${p['Nama Toko']}</p>
+                                    <span class="product-status">ID: ${p['ID Produk']}</span>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="copy-link-btn" data-link="${p['Link Produk']}">Copy Link</button>
+                                    ${p['Link Alternatif'] ? `<button class="copy-link-btn alt" data-link="${p['Link Alternatif']}">Copy Alt</button>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    resultsContainer.innerHTML = html;
+                    
+                    const productCards = document.querySelectorAll('.product-card');
+                    productCards.forEach((card, index) => {
+                        card.style.animationDelay = `${index * 100}ms`;
+                        card.classList.add('animate-in');
+                    });
+                } else {
+                    resultsContainer.innerHTML = '<p class="no-results">Produk tidak ditemukan.</p>';
+                }
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimeout);
+            const keyword = e.target.value.trim();
+            debounceTimeout = setTimeout(() => {
+                if (keyword.length > 1) { fetchSearchResults(keyword); } 
+                else { resultsContainer.innerHTML = ''; }
+            }, 300);
+        });
+        
+        resultsContainer.addEventListener('click', function(e) {
+            if (e.target.classList.contains('copy-link-btn')) {
+                const button = e.target;
+                const linkToCopy = button.dataset.link;
+                navigator.clipboard.writeText(linkToCopy).then(() => {
+                    const originalText = button.textContent;
+                    button.textContent = 'Tersalin!';
+                    button.classList.add('copied');
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.classList.remove('copied');
+                    }, 2000);
+                }).catch(err => { console.error('Gagal menyalin link: ', err); });
+            }
+        });
+        
+        function applyTheme(theme) {
+            if (theme === 'dark') { body.classList.add('dark-mode'); } 
+            else { body.classList.remove('dark-mode'); }
+        }
+        themeToggleButton.addEventListener('click', () => {
+            const isDarkMode = body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>
